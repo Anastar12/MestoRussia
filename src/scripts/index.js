@@ -1,3 +1,32 @@
+const addIcon = new URL('../images/add-icon.svg', import.meta.url);
+const editIcon = new URL('../images/edit-icon.svg', import.meta.url);
+const closeIcon = new URL('../images/close.svg', import.meta.url);
+const likeActiveIcon = new URL('../images/like-active.svg', import.meta.url);
+const likeInactiveIcon = new URL('../images/like-inactive.svg', import.meta.url);
+const deleteIcon = new URL('../images/delete-icon.svg', import.meta.url);
+const logo = new URL('../images/logo.svg', import.meta.url);
+const avatar = new URL('../images/avatar.jpg', import.meta.url);
+const cardImage1 = new URL('../images/card_1.jpg', import.meta.url);
+const cardImage2 = new URL('../images/card_2.jpg', import.meta.url);
+const cardImage3 = new URL('../images/card_3.jpg', import.meta.url);
+
+const images = [
+  {name: 'add-icon', link: addIcon},
+  {name: 'avatar', link: avatar},
+  {name: 'card_1', link: cardImage1},
+  {name: 'card_2', link: cardImage2},
+  {name: 'card_3', link: cardImage3},
+  {name: 'close', link: closeIcon},
+  {name: 'delete-icon', link: deleteIcon},
+  {name: 'edit-icon', link: editIcon},
+  {name: 'logo', link: logo},
+  {name: 'like-active', link: likeActiveIcon},
+  {name: 'like-inactive', link: likeInactiveIcon}
+]
+
+import '../pages/index.css';
+
+
 const deleteButtons = document.querySelectorAll('.card__delete-button');
 
 const placesList = document.querySelector('.places__list');
