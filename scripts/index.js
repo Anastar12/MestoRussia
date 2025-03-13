@@ -69,10 +69,14 @@ initialCards.forEach((cardData) => {
 
 function openModal(popup) {
     popup.classList.add('popup_is-opened');
+    popup.addEventListener('click', closeModalOnOverlayClick);
+    document.addEventListener('keydown', closeModalOnEscape);
 }
 
 function closeModal(popup) {
     popup.classList.remove('popup_is-opened');
+    popup.removeEventListener('click', closeModalOnOverlayClick);
+    document.removeEventListener('keydown', closeModalOnEscape);
 }
 
 function handleProfileFormSubmit(evt) {
@@ -245,3 +249,23 @@ function validateCardForm() {
 
 cardNameInput.addEventListener('input', validateCardForm);
 cardLinkInput.addEventListener('input', validateCardForm);
+
+function closeModalOnOverlayClick(event) {
+  if (event.target === event.currentTarget) {
+    closeModal(event.target);
+  }
+}
+
+function closeModalOnEscape(event) {
+  if (event.key === 'Escape') {
+    const openedPopup = document.querySelector('.popup_is-opened');
+    if (openedPopup) {
+      closeModal(openedPopup);
+    }
+  }
+}
+
+const popups = document.querySelectorAll('.popup');
+popups.forEach((popup) => {
+  popup.addEventListener('click', closeModalOnOverlayClick);
+});
