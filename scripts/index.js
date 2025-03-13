@@ -11,7 +11,7 @@ const editButton = document.querySelector('.profile__edit-button');
 const profileFormElement = profilePopup.querySelector('.popup__form');
 const nameInput = profileFormElement.querySelector('.popup__input_type_name');
 const jobInput = profileFormElement.querySelector('.popup__input_type_description');
-const saveButton = profileFormElement.querySelector('.popup__button'); // находим кнопку "Сохранить"
+const saveButton = profileFormElement.querySelector('.popup__button'); 
 
 const closeButton = document.querySelector('.popup__close');
 
@@ -20,6 +20,9 @@ const profileButton = document.querySelector('.profile__add-button');
 const cardCloseButton = cardPopup.querySelector('.popup__close');
 
 const imageCloseButton = imagePopup.querySelector('.popup__close');
+
+const cardNameInput = cardFormElement.querySelector('.popup__input_type_card-name');
+const cardLinkInput = cardFormElement.querySelector('.popup__input_type_url');
 
 
 function createCard(cardData) {
@@ -75,7 +78,6 @@ function closeModal(popup) {
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
-
     const nameValue = nameInput.value;
     const jobValue = jobInput.value;
 
@@ -89,21 +91,21 @@ function handleProfileFormSubmit(evt) {
 }
 
 function openCardModal() {
-    const cardForm = cardPopup.querySelector('.popup__form');
-    const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
-    const cardLinkInput = cardForm.querySelector('.popup__input_type_url');
-
-
     cardNameInput.value = '';
     cardLinkInput.value = '';
-
-
+    cardNameInput.classList.remove('popup__input_wrong_value');
+    cardLinkInput.classList.remove('popup__input_wrong_value');
+    const saveButton = cardFormElement.querySelector('.popup__button');
+    saveButton.setAttribute('disabled', true);
+    saveButton.classList.add('popup__button_disabled');
+    const errorMessages = cardFormElement.querySelectorAll('.error-message');
+    errorMessages.forEach(message => message.textContent = '');
     openModal(cardPopup);
-}
+  }
+  
 
 function handleCardFormSubmit(evt) {
     evt.preventDefault();
-
 
     const cardNameInput = cardFormElement.querySelector('.popup__input_type_card-name');
     const cardLinkInput = cardFormElement.querySelector('.popup__input_type_url');
@@ -129,26 +131,14 @@ imageCloseButton.addEventListener('click', function () {
 });
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
-
-editButton.addEventListener('click', function () {
-    openModal(profilePopup);
-});
-
-closeButton.addEventListener('click', function () {
-    closeModal(profilePopup);
-});
-
-profileButton.addEventListener('click', function () {
-    openModal(cardPopup);
-});
-
-cardCloseButton.addEventListener('click', function () {
-    closeModal(cardPopup);
-});
-
-profileButton.addEventListener('click', openCardModal);
-
 cardFormElement.addEventListener('submit', handleCardFormSubmit);
+
+editButton.addEventListener('click', () => openModal(profilePopup));
+closeButton.addEventListener('click', () => closeModal(profilePopup));
+profileButton.addEventListener('click', () => openModal(cardPopup));
+cardCloseButton.addEventListener('click', () => closeModal(cardPopup));
+profileButton.addEventListener('click', () => openCardModal);
+
 
 function validateProfileForm() {
     const nameInput = profileFormElement.querySelector('.popup__input_type_name');
@@ -213,3 +203,45 @@ editButton.addEventListener('click', () => {
     validateProfileForm(); 
     openModal(profilePopup);
 });
+
+function validateCardForm() {
+    const saveButton = cardFormElement.querySelector('.popup__button');
+    const nameErrorMessage = cardNameInput.nextElementSibling;
+    const linkErrorMessage = cardLinkInput.nextElementSibling;
+  
+    const isNameValid = cardNameInput.validity.valid;
+    const isLinkValid = cardLinkInput.validity.valid;
+  
+    if (cardNameInput.validity.valueMissing) {
+      nameErrorMessage.textContent = 'Поле "Название" должно быть заполнено.';
+    } else if (cardNameInput.validity.tooShort) {
+      nameErrorMessage.textContent = 'Название должно быть не менее 2 символов.';
+    } else if (cardNameInput.validity.tooLong) {
+      nameErrorMessage.textContent = 'Название должно быть не более 30 символов.';
+    } else {
+      nameErrorMessage.textContent = '';
+    }
+  
+    if (cardLinkInput.validity.valueMissing) {
+      linkErrorMessage.textContent = 'Поле "Ссылка на картинку" должно быть заполнено.';
+    } else if (cardLinkInput.validity.typeMismatch) {
+      linkErrorMessage.textContent = 'Введите корректный URL.';
+    } else {
+      linkErrorMessage.textContent = '';
+    }
+  
+    if (isNameValid && isLinkValid) {
+      saveButton.removeAttribute('disabled');
+      saveButton.classList.remove('popup__button_disabled');
+    } else {
+      saveButton.setAttribute('disabled', true);
+      saveButton.classList.add('popup__button_disabled');
+    }
+  
+    cardNameInput.classList.toggle('popup__input_wrong_value', !isNameValid);
+    cardLinkInput.classList.toggle('popup__input_wrong_value', !isLinkValid);
+  }
+  
+
+cardNameInput.addEventListener('input', validateCardForm);
+cardLinkInput.addEventListener('input', validateCardForm);
