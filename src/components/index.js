@@ -1,7 +1,7 @@
 import '../pages/index.css';
-import { initialCards } from './cards.js';
 import { openModal, closeModal, openCardModal, closeModalOnOverlayClick } from './modal.js';
 import { validateProfileForm, validateCardForm } from './validate.js';
+import { getUserInfo, getCards } from './api.js';
 
 const placesList = document.querySelector('.places__list');
 const profilePopup = document.querySelector('.popup_type_edit');
@@ -28,6 +28,7 @@ function createCard(cardData) {
     const cardImage = cardElement.querySelector('.card__image');
     const deleteButton = cardElement.querySelector('.card__delete-button');
     const likeButton = cardDescription.querySelector('.card__like-button');
+    const likesCounter = cardDescription.querySelector('.card__likes-counter'); // Add this line
     const imagePopup = document.querySelector('.popup_type_image');
     const imageElement = imagePopup.querySelector('.popup__image');
     const imageCaption = imagePopup.querySelector('.popup__caption');
@@ -35,6 +36,9 @@ function createCard(cardData) {
     cardTitle.textContent = cardData.name;
     cardImage.src = cardData.link;
     cardImage.alt = cardData.name;
+    
+    const likesCount = cardData.likes ? cardData.likes.length : 0;
+    likesCounter.textContent = likesCount;
 
     cardImage.addEventListener('click', function () {
         imageElement.src = cardImage.src;
@@ -49,16 +53,31 @@ function createCard(cardData) {
 
     likeButton.addEventListener('click', function (evt) {
         evt.target.classList.toggle('card__like-button_is-active');
+        if (evt.target.classList.contains('card__like-button_is-active')) {
+            likesCounter.textContent = parseInt(likesCounter.textContent) + 1;
+        } else {
+            likesCounter.textContent = parseInt(likesCounter.textContent) - 1;
+        }
     });
     
     return cardElement;
 }
 
 
-initialCards.forEach((cardData) => {
-    const cardElement = createCard(cardData);
-    placesList.appendChild(cardElement);
-});
+function renderCards(cards) {
+    cards.forEach((cardData) => {
+        const cardElement = createCard(cardData);
+        placesList.appendChild(cardElement);
+    });
+}
+
+getCards()
+    .then(cards => {
+        renderCards(cards);
+    })
+    .catch(error => {
+        console.error('Error fetching cards:', error);
+    });
 
 
 function handleProfileFormSubmit(evt) {
