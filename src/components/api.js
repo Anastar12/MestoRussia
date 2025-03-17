@@ -80,3 +80,22 @@ export function unlikeCard(cardId) {
   })
   .then(res => res.json());
 }
+
+export function updateAvatar(avatarLink) {
+  return fetch('https://nomoreparties.co/v1/apf-cohort-202/users/me/avatar', {
+      method: 'PATCH',
+      headers: {
+          authorization: '1208a5bc-6444-426d-b821-a061b16240e2',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          avatar: avatarLink
+      })
+  })
+  .then(res => {
+      if (!res.ok) {
+          return res.json().then(err => Promise.reject(err));
+      }
+      return res.json();
+  });
+}

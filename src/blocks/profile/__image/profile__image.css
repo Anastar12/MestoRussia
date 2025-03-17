@@ -9,6 +9,32 @@
   margin: 0 29px 0 0;
 }
 
+.profile__image-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile__image-edit-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 82%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  background-image: url('../../../images/edit-icon.svg');
+  background-size: 20%;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.profile__image-container:hover .profile__image-edit-icon {
+  opacity: 1;
+}
+
+
 @media screen and (max-width: 740px) {
   .profile__image {
     margin: 0 10px 0 0;

@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import { openModal, closeModal, openCardModal, closeModalOnOverlayClick } from './modal.js';
-import { validateProfileForm, validateCardForm } from './validate.js';
-import { getUserInfo, getCards, editProfile, newCard, deleteCard, likeCard, unlikeCard } from './api.js';
+import { validateProfileForm, validateCardForm, validateAvatarForm } from './validate.js';
+import { getUserInfo, getCards, editProfile, newCard, deleteCard, likeCard, unlikeCard, updateAvatar } from './api.js';
 
 const placesList = document.querySelector('.places__list');
 const profilePopup = document.querySelector('.popup_type_edit');
@@ -20,6 +20,12 @@ const cardNameInput = cardFormElement.querySelector('.popup__input_type_card-nam
 const cardLinkInput = cardFormElement.querySelector('.popup__input_type_url');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+const avatarPopup = document.querySelector('.popup_type_avatar');
+const avatarFormElement = avatarPopup.querySelector('.popup__form');
+const avatarLinkInput = avatarFormElement.querySelector('.popup__input_type_avatar-link');
+const avatarCloseButton = avatarPopup.querySelector('.popup__close');
+const profileImageContainer = document.querySelector('.profile__image-container');
+const profileImage = document.querySelector('.profile__image');
 
 let currentUserId;
 
@@ -27,6 +33,7 @@ getUserInfo()
    .then(userInfo => {
         profileTitle.textContent = userInfo.name;
         profileDescription.textContent = userInfo.about;
+        profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
         currentUserId = userInfo._id;
     })
     .catch(error => {
@@ -190,3 +197,23 @@ const popups = document.querySelectorAll('.popup');
 popups.forEach((popup) => {
   popup.addEventListener('click', closeModalOnOverlayClick);
 });
+
+profileImageContainer.addEventListener('click', () => openModal(avatarPopup));
+avatarCloseButton.addEventListener('click', () => closeModal(avatarPopup));
+
+avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
+avatarLinkInput.addEventListener('input', validateAvatarForm);
+
+function handleAvatarFormSubmit(evt) {
+    evt.preventDefault();
+    const avatarLink = avatarLinkInput.value;
+    
+    updateAvatar(avatarLink)
+        .then(userData => {
+            profileImage.style.backgroundImage = `url(${userData.avatar})`;
+            closeModal(avatarPopup);
+        })
+        .catch(error => {
+            console.error('Error updating avatar:', error);
+        });
+}
