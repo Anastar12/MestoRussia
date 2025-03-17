@@ -129,6 +129,9 @@ getCards()
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
+    const submitButton = profileFormElement.querySelector('.popup__button');
+    toggleButtonText(submitButton, true);
+
     const nameValue = nameInput.value;
     const jobValue = jobInput.value;
 
@@ -138,13 +141,24 @@ function handleProfileFormSubmit(evt) {
     profileTitle.textContent = nameValue;
     profileDescription.textContent = jobValue;
 
-    editProfile(nameValue, jobValue);
-
-    closeModal(profilePopup);
+    editProfile(nameValue, jobValue)
+        .then(() => {
+            closeModal(profilePopup);
+        })
+        .catch(error => {
+            console.error('Error updating profile:', error);
+        })
+        .finally(() => {
+            toggleButtonText(submitButton, false);
+        });
 }
 
 function handleCardFormSubmit(evt) {
     evt.preventDefault();
+
+    const submitButton = cardFormElement.querySelector('.popup__button');
+    toggleButtonText(submitButton, true);
+
     const cardData = {
         name: cardNameInput.value,
         link: cardLinkInput.value
@@ -159,6 +173,9 @@ function handleCardFormSubmit(evt) {
         })
         .catch(error => {
             console.error('Error creating new card:', error);
+        })
+        .finally(() => {
+            toggleButtonText(submitButton, false);
         });
 }
 profilePopup.classList.add('popup_is-animated');
@@ -206,6 +223,10 @@ avatarLinkInput.addEventListener('input', validateAvatarForm);
 
 function handleAvatarFormSubmit(evt) {
     evt.preventDefault();
+
+    const submitButton = avatarFormElement.querySelector('.popup__button');
+    toggleButtonText(submitButton, true);
+
     const avatarLink = avatarLinkInput.value;
     
     updateAvatar(avatarLink)
@@ -215,5 +236,19 @@ function handleAvatarFormSubmit(evt) {
         })
         .catch(error => {
             console.error('Error updating avatar:', error);
+        })
+        .finally(() => {
+            toggleButtonText(submitButton, false);
         });
 }
+
+function toggleButtonText(button, isLoading) {
+    if (isLoading) {
+      button.textContent = 'Сохранение...';
+      button.disabled = true;
+    } else {
+      button.textContent = 'Сохранить';
+      button.disabled = false;
+    }
+  }
+  
