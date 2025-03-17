@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import { openModal, closeModal, openCardModal, closeModalOnOverlayClick } from './modal.js';
 import { validateProfileForm, validateCardForm } from './validate.js';
-import { getUserInfo, getCards, editProfile, newCard, deleteCard } from './api.js';
+import { getUserInfo, getCards, editProfile, newCard, deleteCard, likeCard, unlikeCard } from './api.js';
 
 const placesList = document.querySelector('.places__list');
 const profilePopup = document.querySelector('.popup_type_edit');
@@ -66,15 +66,28 @@ function createCard(cardData) {
         openModal(imagePopup);
     });
 
-    likeButton.addEventListener('click', function (evt) {
-        evt.target.classList.toggle('card__like-button_is-active');
-        if (evt.target.classList.contains('card__like-button_is-active')) {
-            likesCounter.textContent = parseInt(likesCounter.textContent) + 1;
+    const isLiked = cardData.likes.some(like => like._id === currentUserId);
+    if (isLiked) {
+        likeButton.classList.add('card__like-button_is-active');
+    }
+
+    likeButton.addEventListener('click', function () {
+        if (likeButton.classList.contains('card__like-button_is-active')) {
+            unlikeCard(cardData._id)
+                .then(updatedCard => {
+                    likeButton.classList.remove('card__like-button_is-active');
+                    likesCounter.textContent = updatedCard.likes.length;
+                })
+                .catch(error => console.error('Error unliking card:', error));
         } else {
-            likesCounter.textContent = parseInt(likesCounter.textContent) - 1;
+            likeCard(cardData._id)
+                .then(updatedCard => {
+                    likeButton.classList.add('card__like-button_is-active');
+                    likesCounter.textContent = updatedCard.likes.length;
+                })
+                .catch(error => console.error('Error liking card:', error));
         }
     });
-    
     return cardElement;
 }
     

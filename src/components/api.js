@@ -59,3 +59,24 @@ export function deleteCard(cardId) {
       return res.json();
   });
 }
+
+
+export function likeCard(cardId) {
+  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/likes/${cardId}`, {
+    method: 'PUT',
+    headers: {
+      authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
+    }
+  })
+  .then(res => res.json());
+}
+
+export function unlikeCard(cardId) {
+  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/likes/${cardId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
+    }
+  })
+  .then(res => res.json());
+}
