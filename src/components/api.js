@@ -1,28 +1,29 @@
+const config = {
+    baseUrl: 'https://nomoreparties.co/v1/apf-cohort-202',
+    headers: {
+        authorization: '1208a5bc-6444-426d-b821-a061b16240e2',
+        'Content-Type': 'application/json'
+    }
+}
+
 export function getUserInfo() {
-    return fetch('https://nomoreparties.co/v1/apf-cohort-202/users/me', {
-        headers: {
-          authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
-        }
+    return fetch(`${config.baseUrl}/users/me`, {
+        headers: config.headers,
       })
       .then(res => res.json())
 }
 
 export function getCards() {
-    return fetch('https://nomoreparties.co/v1/apf-cohort-202/cards', {
-        headers: {
-          authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
-        }
+    return fetch(`${config.baseUrl}/cards`, {
+        headers: config.headers,
       })
       .then(res => res.json());
 }
 
 export function editProfile(name, about) {
-  return fetch('https://nomoreparties.co/v1/apf-cohort-202/users/me', {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
-      headers: {
-        authorization: '1208a5bc-6444-426d-b821-a061b16240e2',
-        'Content-Type': 'application/json'
-      },
+      headers: config.headers,
       body: JSON.stringify({
         'name': name,
         'about': about
@@ -32,12 +33,9 @@ export function editProfile(name, about) {
 
 
 export function newCard(cardData) {
-  return fetch('https://nomoreparties.co/v1/apf-cohort-202/cards', {
+  return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
-      headers: {
-        authorization: '1208a5bc-6444-426d-b821-a061b16240e2',
-        'Content-Type': 'application/json'
-      },
+      headers: config.headers,
       body: JSON.stringify({
         'name': cardData.name,
         'link': cardData.link
@@ -46,11 +44,9 @@ export function newCard(cardData) {
 }
 
 export function deleteCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
       method: 'DELETE',
-      headers: {
-          authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
-      }
+      headers: config.headers
   })
   .then(res => {
       if (!res.ok) {
@@ -62,32 +58,25 @@ export function deleteCard(cardId) {
 
 
 export function likeCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/likes/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',
-    headers: {
-      authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
-    }
+    headers: config.headers,
   })
   .then(res => res.json());
 }
 
 export function unlikeCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/likes/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',
-    headers: {
-      authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
-    }
+    headers: config.headers
   })
   .then(res => res.json());
 }
 
 export function updateAvatar(avatarLink) {
-  return fetch('https://nomoreparties.co/v1/apf-cohort-202/users/me/avatar', {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
       method: 'PATCH',
-      headers: {
-          authorization: '1208a5bc-6444-426d-b821-a061b16240e2',
-          'Content-Type': 'application/json'
-      },
+      headers: config.headers,
       body: JSON.stringify({
           avatar: avatarLink
       })
