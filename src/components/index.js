@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import { openModal, closeModal, openCardModal, closeModalOnOverlayClick } from './modal.js';
 import { validateProfileForm, validateCardForm } from './validate.js';
-import { getUserInfo, getCards } from './api.js';
+import { getUserInfo, getCards, editProfile, newCard, deleteCard } from './api.js';
 
 const placesList = document.querySelector('.places__list');
 const profilePopup = document.querySelector('.popup_type_edit');
@@ -18,7 +18,20 @@ const cardCloseButton = cardPopup.querySelector('.popup__close');
 const imageCloseButton = imagePopup.querySelector('.popup__close');
 const cardNameInput = cardFormElement.querySelector('.popup__input_type_card-name');
 const cardLinkInput = cardFormElement.querySelector('.popup__input_type_url');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
 
+let currentUserId;
+
+getUserInfo()
+   .then(userInfo => {
+        profileTitle.textContent = userInfo.name;
+        profileDescription.textContent = userInfo.about;
+        currentUserId = userInfo._id;
+    })
+    .catch(error => {
+        console.error('Error fetching user info:', error);
+    });
 
 function createCard(cardData) {
     const cardTemplate = document.querySelector('#card-template').content;
@@ -28,7 +41,7 @@ function createCard(cardData) {
     const cardImage = cardElement.querySelector('.card__image');
     const deleteButton = cardElement.querySelector('.card__delete-button');
     const likeButton = cardDescription.querySelector('.card__like-button');
-    const likesCounter = cardDescription.querySelector('.card__likes-counter'); // Add this line
+    const likesCounter = cardDescription.querySelector('.card__likes-counter');
     const imagePopup = document.querySelector('.popup_type_image');
     const imageElement = imagePopup.querySelector('.popup__image');
     const imageCaption = imagePopup.querySelector('.popup__caption');
@@ -40,15 +53,17 @@ function createCard(cardData) {
     const likesCount = cardData.likes ? cardData.likes.length : 0;
     likesCounter.textContent = likesCount;
 
+    if (cardData.owner && cardData.owner._id !== currentUserId) {
+        deleteButton.style.display = 'none';
+    } else {
+        deleteButton.addEventListener('click', () => handleDeleteCard(cardData._id, cardElement));
+    }
+
     cardImage.addEventListener('click', function () {
         imageElement.src = cardImage.src;
         imageElement.alt = cardImage.alt;
         imageCaption.textContent = cardTitle.textContent;
         openModal(imagePopup);
-    });
-
-    deleteButton.addEventListener('click', function () {
-        cardElement.remove();
     });
 
     likeButton.addEventListener('click', function (evt) {
@@ -62,6 +77,17 @@ function createCard(cardData) {
     
     return cardElement;
 }
+    
+function handleDeleteCard(cardId, cardElement) {
+    deleteCard(cardId)
+        .then(() => {
+            cardElement.remove();
+        })
+        .catch(error => {
+            console.error('Error deleting card:', error);
+        });
+}
+
 
 
 function renderCards(cards) {
@@ -92,27 +118,29 @@ function handleProfileFormSubmit(evt) {
     profileTitle.textContent = nameValue;
     profileDescription.textContent = jobValue;
 
+    editProfile(nameValue, jobValue);
+
     closeModal(profilePopup);
 }
 
 function handleCardFormSubmit(evt) {
     evt.preventDefault();
-
-    const cardNameInput = cardFormElement.querySelector('.popup__input_type_card-name');
-    const cardLinkInput = cardFormElement.querySelector('.popup__input_type_url');
-
     const cardData = {
         name: cardNameInput.value,
         link: cardLinkInput.value
     };
-
-    const newCardElement = createCard(cardData);
-    const placesList = document.querySelector('.places__list');
-    placesList.prepend(newCardElement);
-
-    closeModal(cardPopup);
+    newCard(cardData)
+        .then(response => response.json())
+        .then(newCardData => {
+            const newCardElement = createCard(newCardData);
+            const placesList = document.querySelector('.places__list');
+            placesList.prepend(newCardElement);
+            closeModal(cardPopup);
+        })
+        .catch(error => {
+            console.error('Error creating new card:', error);
+        });
 }
-
 profilePopup.classList.add('popup_is-animated');
 cardPopup.classList.add('popup_is-animated');
 imagePopup.classList.add('popup_is-animated');

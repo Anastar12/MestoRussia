@@ -16,7 +16,7 @@ export function getCards() {
       .then(res => res.json());
 }
 
-export function editProfile() {
+export function editProfile(name, about) {
   return fetch('https://nomoreparties.co/v1/apf-cohort-202/users/me', {
     method: 'PATCH',
       headers: {
@@ -24,14 +24,14 @@ export function editProfile() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'name': 'Annie Aster',
-        'about': 'Web-developer'
+        'name': name,
+        'about': about
       })
     })
 }
 
 
-export function newCard() {
+export function newCard(cardData) {
   return fetch('https://nomoreparties.co/v1/apf-cohort-202/cards', {
     method: 'POST',
       headers: {
@@ -39,8 +39,23 @@ export function newCard() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'name': 'Байкал',
-        'link': 'https://pictures.s3.yandex.net/frontend-developer/ava.jpg'
+        'name': cardData.name,
+        'link': cardData.link
       })
     })
+}
+
+export function deleteCard(cardId) {
+  return fetch(`https://nomoreparties.co/v1/apf-cohort-202/cards/${cardId}`, {
+      method: 'DELETE',
+      headers: {
+          authorization: '1208a5bc-6444-426d-b821-a061b16240e2'
+      }
+  })
+  .then(res => {
+      if (!res.ok) {
+          return res.json().then(err => Promise.reject(err));
+      }
+      return res.json();
+  });
 }
